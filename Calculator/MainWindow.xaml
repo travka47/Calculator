@@ -12,7 +12,15 @@
             <MenuItem Header="Правка"/>
             <MenuItem Header="Справка"/>
         </Menu>
-        <TextBox Margin="10 5" Height="50" TextAlignment="Right" VerticalContentAlignment="Bottom" IsReadOnly="True"/>
+        <TextBox
+            x:Name="Input" 
+            Text="0"
+            FontSize="18"
+            Margin="10 5" 
+            Height="50" 
+            TextAlignment="Right" 
+            VerticalContentAlignment="Bottom" 
+            IsReadOnly="True" />
         <Grid x:Name="Buttons" Margin="7.5 0" Height="190">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition/>

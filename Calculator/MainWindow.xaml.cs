@@ -1,7 +1,16 @@
-﻿using System.Windows;
+﻿using System.Collections.Generic;
+using System.Windows;
 using System.Windows.Controls;
 
 namespace Calculator {
+    
+    public struct State
+    {
+        public Stack<string> Operands;
+        public Stack<string> Operations;
+        public string Input;    
+    }
+    
     public partial class MainWindow {
         readonly string[][] buttons = {
             new string[] {"MC", "MR", "MS", "M+", "M-"},
@@ -11,9 +20,20 @@ namespace Calculator {
             new string[] {"1", "2", "3", "-", "="},
             new string[] {"0", "0", ",", "+", "="}
         };
+        
+        private State _state;
         public MainWindow() {
+            _state.Operations = new Stack<string>();
+            _state.Operands = new Stack<string>();
             InitializeComponent();
             ButtonsMarkup();
+        }
+
+        private void Btn_Click(object sender, RoutedEventArgs e) {
+            var b = sender as Button;
+            var content = b.Content.ToString();
+            //Input.Text = _state.Input;
+            Input.Text = content;
         }
 
         private void ButtonsMarkup() {
@@ -43,7 +63,8 @@ namespace Calculator {
                         }
                         else continue;
                     }
-                    
+
+                    b.Click += Btn_Click;
                     Buttons.Children.Add(b);
                 }
             }
