@@ -4,13 +4,26 @@ using System.Windows.Controls;
 
 namespace Calculator {
     
-    public struct State
-    {
-        public Stack<string> Operands;
-        public Stack<string> Operations;
-        public string Input;    
+    public struct State {
+        public string Input;
+        public InputState InputState;
+        public double? LeftOperand;
+        public double? RightOperand;
+        public string Operation;
+        public Storage Storage;
     }
     
+    public struct Storage {
+        public double? LastOperand;
+        public string LastOperation;
+    }
+
+    public enum InputState {
+        None,
+        IsLeft,
+        Clean,
+        IsRight
+    }
     public partial class MainWindow {
         readonly string[][] buttons = {
             new string[] {"MC", "MR", "MS", "M+", "M-"},
@@ -23,8 +36,6 @@ namespace Calculator {
         
         private State _state;
         public MainWindow() {
-            _state.Operations = new Stack<string>();
-            _state.Operands = new Stack<string>();
             InitializeComponent();
             ButtonsMarkup();
         }
@@ -32,8 +43,8 @@ namespace Calculator {
         private void Btn_Click(object sender, RoutedEventArgs e) {
             var b = sender as Button;
             var content = b.Content.ToString();
-            //Input.Text = _state.Input;
-            Input.Text = content;
+            Controller.Dispatch(ref _state, content);
+            Input.Text = _state.Input;
         }
 
         private void ButtonsMarkup() {
