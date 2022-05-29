@@ -13,7 +13,8 @@ namespace Calculator {
                         s.InputState = InputState.IsRight;
                         s.Input = "";
                     }
-                    s.Input += content;
+                    if (s.Input.Equals("0")) s.Input = content;
+                    else s.Input += content;
                     break;
                 case Utils.OperationType.Binary:
                     if (s.InputState.Equals(InputState.IsRight)) {
@@ -26,9 +27,6 @@ namespace Calculator {
                     break;
                 case Utils.OperationType.Unary:
                     DispatchUnary(ref s, content);
-                    break;
-                case Utils.OperationType.Percent:
-                    //s.LeftOperand = s.LeftOperand +-*/ s.RightOperand * %
                     break;
                 case Utils.OperationType.Clean:
                     DispatchClean(ref s, content);
@@ -86,15 +84,47 @@ namespace Calculator {
             }
             s.Operation = null;
             s.RightOperand = null;
-            s.Input = s.LeftOperand.ToString();
+            s.Input = s.LeftOperand is null ? "0" : s.LeftOperand.ToString();
             s.InputState = InputState.None;
         }
 
         private static void DispatchUnary(ref State s, string content) {
             switch (content) {
+                case "%":
+                    switch (s.InputState) {
+                        case InputState.IsLeft:
+                            s.LeftOperand = 0;
+                            s.Input = s.LeftOperand.ToString();
+                            break;
+                        case InputState.IsRight:
+                            s.RightOperand = s.LeftOperand / 100 * Convert.ToDouble(s.Input);
+                            s.Input = s.RightOperand.ToString();
+                            break;
+                    }
+                    break;
                 case "1/x":
+                    switch (s.InputState) {
+                        case InputState.IsLeft:
+                            s.LeftOperand = 1 / Convert.ToDouble(s.Input);
+                            s.Input = s.LeftOperand.ToString();
+                            break;
+                        case InputState.IsRight:
+                            s.RightOperand = 1 / Convert.ToDouble(s.Input);
+                            s.Input = s.RightOperand.ToString();
+                            break;
+                    }
                     break;
                 case "√":
+                    switch (s.InputState) {
+                        case InputState.IsLeft:
+                            s.LeftOperand = Math.Sqrt(Convert.ToDouble(s.Input));
+                            s.Input = s.LeftOperand.ToString();
+                            break;
+                        case InputState.IsRight:
+                            s.RightOperand = Math.Sqrt(Convert.ToDouble(s.Input));
+                            s.Input = s.RightOperand.ToString();
+                            break;
+                    }
                     break;
                 case "±":
                     s.LeftOperand = -Convert.ToDouble(s.Input);
@@ -105,9 +135,14 @@ namespace Calculator {
 
         private static void DispatchClean(ref State s, string content) {
             switch (content) {
+                case "🠔":
+                    s.Input = s.Input.Length > 1 ? s.Input.Remove(s.Input.Length - 1) : "0";
+                    break;
                 case "C":
+                    s = new State { Input = "0" };
                     break;
                 case "CE":
+                    s.Input = "0";
                     break;
             }
         }

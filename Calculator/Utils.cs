@@ -6,7 +6,6 @@ namespace Calculator {
             Digit,
             Binary,
             Unary,
-            Percent,
             Clean,
             Memory,
             Output,
@@ -32,7 +31,8 @@ namespace Calculator {
                 {"1/x", OperationType.Unary},
                 {"√", OperationType.Unary},
                 {"±", OperationType.Unary},
-                {"%", OperationType.Percent},
+                {"%", OperationType.Unary},
+                {"🠔", OperationType.Clean},
                 {"C", OperationType.Clean},
                 {"CE", OperationType.Clean},
                 {"MC", OperationType.Memory},
@@ -42,7 +42,6 @@ namespace Calculator {
                 {"M-", OperationType.Memory},
                 {"=", OperationType.Output},
                 {",", OperationType.FloatingPoint},
-                {".", OperationType.FloatingPoint}
             };
     } 
 }
