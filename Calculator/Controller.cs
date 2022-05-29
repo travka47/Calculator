@@ -79,6 +79,8 @@ namespace Calculator {
                     s.LeftOperand *= s.RightOperand;
                     break;
                 case "/":
+                    if (s.RightOperand.Equals(0))
+                        throw new InvalidOperationException("Деление на ноль невозможно");
                     s.LeftOperand /= s.RightOperand;
                     break;
             }
@@ -105,6 +107,8 @@ namespace Calculator {
                 case "1/x":
                     switch (s.InputState) {
                         case InputState.IsLeft or InputState.None:
+                            if (Convert.ToDouble(s.Input).Equals(0))
+                                throw new InvalidOperationException("Деление на ноль невозможно");
                             s.LeftOperand = 1 / Convert.ToDouble(s.Input);
                             s.Input = s.LeftOperand.ToString();
                             break;
@@ -117,10 +121,14 @@ namespace Calculator {
                 case "√":
                     switch (s.InputState) {
                         case InputState.IsLeft or InputState.None:
+                            if (s.LeftOperand < 0)
+                                throw new InvalidOperationException("Недопустимый ввод");
                             s.LeftOperand = Math.Sqrt(Convert.ToDouble(s.Input));
                             s.Input = s.LeftOperand.ToString();
                             break;
                         case InputState.IsRight:
+                            if (s.RightOperand < 0)
+                                throw new InvalidOperationException("Недопустимый ввод");
                             s.RightOperand = Math.Sqrt(Convert.ToDouble(s.Input));
                             s.Input = s.RightOperand.ToString();
                             break;
@@ -155,17 +163,18 @@ namespace Calculator {
                     break;
                 case "MR":
                     s.Input = s.MemoryOperand.ToString();
+                    s.InputState = s.Operation is null ? InputState.IsLeft : InputState.IsRight;
                     break;
                 case "MC":
                     s.MemoryOperand = 0;
                     break;
                 case "M+":
                     s.MemoryOperand += Convert.ToDouble(s.Input);
-                    s.InputState = InputState.None;
+                    s.InputState = s.Operation is null ? InputState.None : InputState.Clean;
                     break;
                 case "M-":
                     s.MemoryOperand -= Convert.ToDouble(s.Input);
-                    s.InputState = InputState.None;
+                    s.InputState = s.Operation is null ? InputState.None : InputState.Clean;
                     break;
             }
         }

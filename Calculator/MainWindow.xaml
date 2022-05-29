@@ -51,7 +51,7 @@
         <TextBox
             x:Name="Input" 
             Text="0"
-            FontSize="20"
+            FontSize="18"
             Margin="10 5" 
             Height="50"
             Background="MintCream"

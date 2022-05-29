@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
@@ -45,7 +46,13 @@ namespace Calculator {
         private void Btn_Click(object sender, RoutedEventArgs e) {
             var b = sender as Button;
             var content = b.Content.ToString();
-            Controller.Dispatch(ref _state, content);
+            try {
+                Controller.Dispatch(ref _state, content);
+            }
+            catch (InvalidOperationException invalidOperationException) {
+                MessageBox.Show(invalidOperationException.Message);
+                _state = new State { Input = "0", MemoryOperand = _state.MemoryOperand};
+            }
             Input.Text = _state.Input;
         }
 
