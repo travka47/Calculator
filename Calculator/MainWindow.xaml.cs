@@ -10,6 +10,7 @@ namespace Calculator {
         public double? LeftOperand;
         public double? RightOperand;
         public string Operation;
+        public double MemoryOperand;
         public Storage Storage;
     }
     

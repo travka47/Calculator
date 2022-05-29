@@ -92,7 +92,7 @@ namespace Calculator {
             switch (content) {
                 case "%":
                     switch (s.InputState) {
-                        case InputState.IsLeft:
+                        case InputState.IsLeft or InputState.None:
                             s.LeftOperand = 0;
                             s.Input = s.LeftOperand.ToString();
                             break;
@@ -104,7 +104,7 @@ namespace Calculator {
                     break;
                 case "1/x":
                     switch (s.InputState) {
-                        case InputState.IsLeft:
+                        case InputState.IsLeft or InputState.None:
                             s.LeftOperand = 1 / Convert.ToDouble(s.Input);
                             s.Input = s.LeftOperand.ToString();
                             break;
@@ -116,7 +116,7 @@ namespace Calculator {
                     break;
                 case "√":
                     switch (s.InputState) {
-                        case InputState.IsLeft:
+                        case InputState.IsLeft or InputState.None:
                             s.LeftOperand = Math.Sqrt(Convert.ToDouble(s.Input));
                             s.Input = s.LeftOperand.ToString();
                             break;
@@ -139,7 +139,7 @@ namespace Calculator {
                     s.Input = s.Input.Length > 1 ? s.Input.Remove(s.Input.Length - 1) : "0";
                     break;
                 case "C":
-                    s = new State { Input = "0" };
+                    s = new State { Input = "0", MemoryOperand = s.MemoryOperand};
                     break;
                 case "CE":
                     s.Input = "0";
@@ -150,14 +150,22 @@ namespace Calculator {
         private static void DispatchMemory(ref State s, string content) {
             switch (content) {
                 case "MS":
+                    s.MemoryOperand = Convert.ToDouble(s.Input);
+                    s.InputState = InputState.None;
                     break;
                 case "MR":
+                    s.Input = s.MemoryOperand.ToString();
                     break;
                 case "MC":
+                    s.MemoryOperand = 0;
                     break;
                 case "M+":
+                    s.MemoryOperand += Convert.ToDouble(s.Input);
+                    s.InputState = InputState.None;
                     break;
                 case "M-":
+                    s.MemoryOperand -= Convert.ToDouble(s.Input);
+                    s.InputState = InputState.None;
                     break;
             }
         }
