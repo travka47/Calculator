@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Media;
 
 namespace Calculator {
     
@@ -54,6 +55,7 @@ namespace Calculator {
                     
                     var b = new Button() {
                         Content = buttons[i][j],
+                        Background = Brushes.MintCream,
                         Margin = new Thickness(2.5),
                     };
                     

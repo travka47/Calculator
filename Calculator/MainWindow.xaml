@@ -5,19 +5,56 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Calculator"
         mc:Ignorable="d"
-        Title="Калькулятор" Height="322" Width="225" ResizeMode="NoResize">
+        Title="Калькулятор"
+        Height="322"
+        Width="225"
+        Background="AliceBlue"
+        ResizeMode="NoResize">
     <StackPanel>
-        <Menu>
-            <MenuItem Header="Вид"/>
-            <MenuItem Header="Правка"/>
-            <MenuItem Header="Справка"/>
+        <Menu Background="White">
+            <MenuItem Header="Вид">
+                <MenuItem Header="Обычный" IsChecked="True"/>
+                <MenuItem Header="Инженерный"/>
+                <MenuItem Header="Программист"/>
+                <MenuItem Header="Статистика"/>
+                <Separator/>
+                <MenuItem Header="Журнал" IsCheckable="True"/>
+                <MenuItem Header="Группировка цифр по разрядам" IsCheckable="True"/>
+                <Separator/>
+                <MenuItem Header="Обычный" IsChecked="True"/>
+                <MenuItem Header="Преобразование единиц"/>
+                <MenuItem Header="Вычисление даты"/>
+                <MenuItem Header="Листы">
+                    <MenuItem Header="Ипотека"/>
+                    <MenuItem Header="Автолизинг"/>
+                    <MenuItem Header="Экономия (миль/галлон)"/>
+                    <MenuItem Header="Экономия топлива (л/100 км)"/>
+                </MenuItem>
+            </MenuItem>
+            <MenuItem Header="Правка">
+                <MenuItem Header="Копировать"></MenuItem>
+                <MenuItem Header="Вставить"></MenuItem>
+                <Separator/>
+                <MenuItem Header="Журнал">
+                    <MenuItem Header="Копировать журнал"/>
+                    <MenuItem Header="Изменить"/>
+                    <MenuItem Header="Отменить правку"/>
+                    <MenuItem Header="Очистить"/>
+                </MenuItem>
+            </MenuItem>
+            <MenuItem Header="Справка">
+                <MenuItem Header="Просмотреть справку"/>
+                <Separator/>
+                <MenuItem Header="О программе"/>
+            </MenuItem>
         </Menu>
         <TextBox
             x:Name="Input" 
             Text="0"
-            FontSize="18"
+            FontSize="20"
             Margin="10 5" 
-            Height="50" 
+            Height="50"
+            Background="MintCream"
             TextAlignment="Right" 
             VerticalContentAlignment="Bottom" 
             IsReadOnly="True" />
