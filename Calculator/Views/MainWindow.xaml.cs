@@ -3,30 +3,10 @@ using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
+using Calculator.Controllers;
+using Calculator.Models;
 
-namespace Calculator {
-    
-    public struct State {
-        public string Input;
-        public InputState InputState;
-        public double? LeftOperand;
-        public double? RightOperand;
-        public string Operation;
-        public double MemoryOperand;
-        public Storage Storage;
-    }
-    
-    public struct Storage {
-        public double? LastOperand;
-        public string LastOperation;
-    }
-
-    public enum InputState {
-        None,
-        IsLeft,
-        Clean,
-        IsRight
-    }
+namespace Calculator.Views {
     public partial class MainWindow {
         readonly string[][] buttons = {
             new string[] {"MC", "MR", "MS", "M+", "M-"},
@@ -47,7 +27,7 @@ namespace Calculator {
             var b = sender as Button;
             var content = b.Content.ToString();
             try {
-                Controller.Dispatch(ref _state, content);
+                CalculatorController.Dispatch(ref _state, content);
             }
             catch (InvalidOperationException invalidOperationException) {
                 MessageBox.Show(invalidOperationException.Message);

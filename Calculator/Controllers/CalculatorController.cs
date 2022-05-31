@@ -1,7 +1,9 @@
 ﻿using System;
+using Calculator.Models;
+using Calculator.Views;
 
-namespace Calculator {
-    public class Controller {
+namespace Calculator.Controllers {
+    public class CalculatorController {
         public static void Dispatch(ref State s, string content) {
             switch (Utils.TypesMap[content]) {
                 case Utils.OperationType.Digit:
@@ -79,7 +81,7 @@ namespace Calculator {
                     s.LeftOperand *= s.RightOperand;
                     break;
                 case "/":
-                    if (s.RightOperand.Equals(0))
+                    if (s.RightOperand.Equals(0.0))
                         throw new InvalidOperationException("Деление на ноль невозможно");
                     s.LeftOperand /= s.RightOperand;
                     break;
