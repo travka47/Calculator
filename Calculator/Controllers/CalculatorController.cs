@@ -100,6 +100,11 @@ namespace Calculator.Controllers {
                             s.LeftOperand = 0;
                             s.Input = s.LeftOperand.ToString();
                             break;
+                        case InputState.Clean:
+                            s.RightOperand = s.LeftOperand / 100 * s.LeftOperand;
+                            s.Input = s.RightOperand.ToString();
+                            s.InputState = InputState.IsRight;
+                            break;
                         case InputState.IsRight:
                             s.RightOperand = s.LeftOperand / 100 * Convert.ToDouble(s.Input);
                             s.Input = s.RightOperand.ToString();
@@ -113,6 +118,11 @@ namespace Calculator.Controllers {
                                 throw new InvalidOperationException("Деление на ноль невозможно");
                             s.LeftOperand = 1 / Convert.ToDouble(s.Input);
                             s.Input = s.LeftOperand.ToString();
+                            break;
+                        case InputState.Clean:
+                            s.RightOperand = 1 / s.LeftOperand;
+                            s.Input = s.RightOperand.ToString();
+                            s.InputState = InputState.IsRight;
                             break;
                         case InputState.IsRight:
                             s.RightOperand = 1 / Convert.ToDouble(s.Input);
@@ -128,6 +138,11 @@ namespace Calculator.Controllers {
                             s.LeftOperand = Math.Sqrt(Convert.ToDouble(s.Input));
                             s.Input = s.LeftOperand.ToString();
                             break;
+                        case InputState.Clean:
+                            s.RightOperand = Math.Sqrt(Convert.ToDouble(s.LeftOperand));
+                            s.Input = s.RightOperand.ToString();
+                            s.InputState = InputState.IsRight;
+                            break;
                         case InputState.IsRight:
                             if (s.RightOperand < 0)
                                 throw new InvalidOperationException("Недопустимый ввод");
@@ -137,8 +152,21 @@ namespace Calculator.Controllers {
                     }
                     break;
                 case "±":
-                    s.LeftOperand = -Convert.ToDouble(s.Input);
-                    s.Input = s.LeftOperand.ToString();
+                    switch (s.InputState) {
+                        case InputState.IsLeft or InputState.None:
+                            s.LeftOperand = -Convert.ToDouble(s.Input);
+                            s.Input = s.LeftOperand.ToString();
+                            break;
+                        case InputState.Clean:
+                            s.RightOperand = -s.LeftOperand;
+                            s.Input = s.RightOperand.ToString();
+                            s.InputState = InputState.IsRight;
+                            break;
+                        case InputState.IsRight:
+                            s.RightOperand = -Convert.ToDouble(s.Input);
+                            s.Input = s.RightOperand.ToString();
+                            break;
+                    }
                     break;
             }
         }
