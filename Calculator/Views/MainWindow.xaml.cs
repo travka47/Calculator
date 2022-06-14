@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
@@ -16,11 +17,12 @@ namespace Calculator.Views {
             new string[] {"1", "2", "3", "-", "="},
             new string[] {"0", "0", ",", "+", "="}
         };
-        
+
         private State _state;
         public MainWindow() {
             InitializeComponent();
             ButtonsMarkup();
+            _state = new State { Input = "0", History = new Stack<string>()};
         }
 
         private void Btn_Click(object sender, RoutedEventArgs e) {
@@ -31,9 +33,13 @@ namespace Calculator.Views {
             }
             catch (InvalidOperationException invalidOperationException) {
                 MessageBox.Show(invalidOperationException.Message);
-                _state = new State { Input = "0", MemoryOperand = _state.MemoryOperand};
+                _state = new State { Input = "0", History = new Stack<string>(), MemoryOperand = _state.MemoryOperand };
+            }
+            catch (Exception exception) {
+                MessageBox.Show(exception.Message);
             }
             Input.Text = _state.Input;
+            History.Text = string.Join(" ", _state.History.Reverse().ToArray());
         }
 
         private void ButtonsMarkup() {
