@@ -1,7 +1,10 @@
-﻿namespace Calculator.Models;
+﻿using System.Collections.Generic;
+
+namespace Calculator.Models;
 
 public struct State {
     public string Input;
+    public Stack<string> History;
     public InputState InputState;
     public double? LeftOperand;
     public double? RightOperand;

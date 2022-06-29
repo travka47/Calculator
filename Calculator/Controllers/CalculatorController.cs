@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using Calculator.Models;
 using Calculator.Views;
 
@@ -19,13 +20,35 @@ namespace Calculator.Controllers {
                     else s.Input += content;
                     break;
                 case Utils.OperationType.Binary:
-                    if (s.InputState.Equals(InputState.IsRight)) {
-                        Logic(ref s);
-                        DispatchBinary(ref s, s.Operation);
+                    switch (s.InputState) {
+                        case InputState.None:
+                            if (s.History.Count.Equals(0)) {
+                                s.History.Push(s.LeftOperand.ToString());
+                            }
+                            s.History.Push(content);
+                            break;
+                        case InputState.IsRight:
+                            Logic(ref s);
+                            s.History.Push(s.RightOperand.ToString());
+                            s.History.Push(content);
+                            DispatchBinary(ref s, s.Operation);
+                            break;
                     }
                     s.LeftOperand = Convert.ToDouble(s.Input);
-                    s.InputState = InputState.Clean;
                     s.Operation = content;
+                    switch (s.InputState) {
+                        case InputState.IsLeft:
+                            if (s.History.Count.Equals(0)) {
+                                s.History.Push(s.LeftOperand.ToString());
+                            }
+                            s.History.Push(s.Operation);
+                            break;
+                        case InputState.Clean:
+                            s.History.Pop();
+                            s.History.Push(s.Operation);
+                            break;
+                    }
+                    s.InputState = InputState.Clean;
                     break;
                 case Utils.OperationType.Unary:
                     DispatchUnary(ref s, content);
@@ -41,6 +64,7 @@ namespace Calculator.Controllers {
                     s.Storage.LastOperation = s.Operation;
                     s.Storage.LastOperand = s.RightOperand;
                     DispatchBinary(ref s, s.Operation);
+                    s.History.Clear();
                     break;
                 case Utils.OperationType.FloatingPoint:
                     s.Input ??= "0";
@@ -104,10 +128,12 @@ namespace Calculator.Controllers {
                             s.RightOperand = s.LeftOperand / 100 * s.LeftOperand;
                             s.Input = s.RightOperand.ToString();
                             s.InputState = InputState.IsRight;
+                            s.History.Push(s.RightOperand.ToString());
                             break;
                         case InputState.IsRight:
                             s.RightOperand = s.LeftOperand / 100 * Convert.ToDouble(s.Input);
                             s.Input = s.RightOperand.ToString();
+                            s.History.Push(s.RightOperand.ToString());
                             break;
                     }
                     break;
@@ -117,18 +143,15 @@ namespace Calculator.Controllers {
                             if (Convert.ToDouble(s.Input).Equals(0))
                                 throw new InvalidOperationException("Деление на ноль невозможно");
                             s.LeftOperand = 1 / Convert.ToDouble(s.Input);
-                            s.Input = s.LeftOperand.ToString();
                             break;
                         case InputState.Clean:
                             s.RightOperand = 1 / s.LeftOperand;
-                            s.Input = s.RightOperand.ToString();
-                            s.InputState = InputState.IsRight;
                             break;
                         case InputState.IsRight:
                             s.RightOperand = 1 / Convert.ToDouble(s.Input);
-                            s.Input = s.RightOperand.ToString();
                             break;
                     }
+                    HistoryLogic(ref s, content);
                     break;
                 case "√":
                     switch (s.InputState) {
@@ -136,48 +159,77 @@ namespace Calculator.Controllers {
                             if (s.LeftOperand < 0)
                                 throw new InvalidOperationException("Недопустимый ввод");
                             s.LeftOperand = Math.Sqrt(Convert.ToDouble(s.Input));
-                            s.Input = s.LeftOperand.ToString();
                             break;
                         case InputState.Clean:
                             s.RightOperand = Math.Sqrt(Convert.ToDouble(s.LeftOperand));
-                            s.Input = s.RightOperand.ToString();
-                            s.InputState = InputState.IsRight;
                             break;
                         case InputState.IsRight:
                             if (s.RightOperand < 0)
                                 throw new InvalidOperationException("Недопустимый ввод");
                             s.RightOperand = Math.Sqrt(Convert.ToDouble(s.Input));
-                            s.Input = s.RightOperand.ToString();
                             break;
                     }
+                    HistoryLogic(ref s, content);
                     break;
                 case "±":
                     switch (s.InputState) {
                         case InputState.IsLeft or InputState.None:
                             s.LeftOperand = -Convert.ToDouble(s.Input);
-                            s.Input = s.LeftOperand.ToString();
+                            //s.Input = s.LeftOperand.ToString();
                             break;
                         case InputState.Clean:
                             s.RightOperand = -s.LeftOperand;
-                            s.Input = s.RightOperand.ToString();
-                            s.InputState = InputState.IsRight;
+                            //s.Input = s.RightOperand.ToString();
+                            //s.InputState = InputState.IsRight;
                             break;
                         case InputState.IsRight:
                             s.RightOperand = -Convert.ToDouble(s.Input);
-                            s.Input = s.RightOperand.ToString();
+                            //s.Input = s.RightOperand.ToString();
                             break;
                     }
+                    HistoryLogic(ref s, content);
                     break;
             }
         }
 
+        private static string WrapUnary(string operand, string operation) {
+            var res = operation switch {
+                "1/x" => $"reciproc({operand})",
+                "√" => $"sqrt({operand})",
+                "±" => $"negate({operand})",
+                _ => ""
+            };
+            return res;
+        }
+        
+        private static void HistoryLogic(ref State s, string operation) {
+            string pushing;
+            switch (s.InputState) {
+                case InputState.IsLeft or InputState.None:
+                    pushing = s.History.Count.Equals(0) ? s.Input : s.History.Pop();
+                    s.History.Push(WrapUnary(pushing, operation));
+                    s.Input = s.LeftOperand.ToString();
+                    break;
+                case InputState.Clean:
+                    s.Input = s.RightOperand.ToString();
+                    s.History.Push(WrapUnary(s.LeftOperand.ToString(), operation));
+                    s.InputState = InputState.IsRight;
+                    break;
+                case InputState.IsRight:
+                    pushing = "+-*/".Contains(s.History.Peek()) ? s.Input : s.History.Pop();
+                    s.History.Push(WrapUnary(pushing, operation));
+                    s.Input = s.RightOperand.ToString();
+                    break;
+            }
+        }
+        
         private static void DispatchClean(ref State s, string content) {
             switch (content) {
                 case "🠔":
                     s.Input = s.Input.Length > 1 ? s.Input.Remove(s.Input.Length - 1) : "0";
                     break;
                 case "C":
-                    s = new State { Input = "0", MemoryOperand = s.MemoryOperand};
+                    s = new State { Input = "0", History = new Stack<string>(), MemoryOperand = s.MemoryOperand};
                     break;
                 case "CE":
                     s.Input = "0";
