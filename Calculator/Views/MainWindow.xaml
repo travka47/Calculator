@@ -48,17 +48,25 @@
                 <MenuItem Header="О программе"/>
             </MenuItem>
         </Menu>
-        <TextBox
-            x:Name="Input" 
-            Text="0"
-            FontSize="18"
-            Margin="10 5" 
-            Height="50"
-            Background="MintCream"
-            TextAlignment="Right" 
-            VerticalContentAlignment="Bottom" 
-            IsReadOnly="True" />
-        <Grid x:Name="Buttons" Margin="7.5 0" Height="190">
+        <StackPanel Margin="10 3">
+            <TextBlock
+                x:Name="History"
+                Height="20"
+                Background="White"
+                TextAlignment="Right"
+                TextWrapping="NoWrap"
+                ClipToBounds="False" />
+            <TextBox
+                x:Name="Input" 
+                Text="0"
+                FontSize="18"
+                Height="50"
+                Background="MintCream"
+                TextAlignment="Right" 
+                VerticalContentAlignment="Bottom" 
+                IsReadOnly="True" />
+        </StackPanel>
+        <Grid x:Name="Buttons" Margin="7.5 0" Height="175">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition/>
                 <ColumnDefinition/>
