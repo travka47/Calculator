@@ -20,9 +20,19 @@ namespace Calculator.Controllers {
                     else s.Input += content;
                     break;
                 case Utils.OperationType.Binary:
-                    if (s.InputState.Equals(InputState.IsRight)) {
-                        Logic(ref s);
-                        DispatchBinary(ref s, s.Operation);
+                    switch (s.InputState) {
+                        case InputState.None:
+                            if (s.History.Count.Equals(0)) {
+                                s.History.Push(s.LeftOperand.ToString());
+                            }
+                            s.History.Push(content);
+                            break;
+                        case InputState.IsRight:
+                            Logic(ref s);
+                            s.History.Push(s.RightOperand.ToString());
+                            s.History.Push(content);
+                            DispatchBinary(ref s, s.Operation);
+                            break;
                     }
                     s.LeftOperand = Convert.ToDouble(s.Input);
                     s.Operation = content;
@@ -54,6 +64,7 @@ namespace Calculator.Controllers {
                     s.Storage.LastOperation = s.Operation;
                     s.Storage.LastOperand = s.RightOperand;
                     DispatchBinary(ref s, s.Operation);
+                    s.History.Clear();
                     break;
                 case Utils.OperationType.FloatingPoint:
                     s.Input ??= "0";
@@ -101,13 +112,11 @@ namespace Calculator.Controllers {
             }
             s.Operation = null;
             s.RightOperand = null;
-            s.History.Clear();
             s.Input = s.LeftOperand is null ? "0" : s.LeftOperand.ToString();
             s.InputState = InputState.None;
         }
 
         private static void DispatchUnary(ref State s, string content) {
-            string pushing;
             switch (content) {
                 case "%":
                     switch (s.InputState) {
@@ -119,10 +128,12 @@ namespace Calculator.Controllers {
                             s.RightOperand = s.LeftOperand / 100 * s.LeftOperand;
                             s.Input = s.RightOperand.ToString();
                             s.InputState = InputState.IsRight;
+                            s.History.Push(s.RightOperand.ToString());
                             break;
                         case InputState.IsRight:
                             s.RightOperand = s.LeftOperand / 100 * Convert.ToDouble(s.Input);
                             s.Input = s.RightOperand.ToString();
+                            s.History.Push(s.RightOperand.ToString());
                             break;
                     }
                     break;
