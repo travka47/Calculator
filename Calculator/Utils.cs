@@ -9,7 +9,8 @@ namespace Calculator {
             Clean,
             Memory,
             Output,
-            FloatingPoint
+            FloatingPoint,
+            Undefined
         }
 
         public static readonly Dictionary<string, OperationType> TypesMap =
@@ -42,6 +43,7 @@ namespace Calculator {
                 {"M-", OperationType.Memory},
                 {"=", OperationType.Output},
                 {",", OperationType.FloatingPoint},
+                {"&", OperationType.Undefined},
             };
     } 
 }

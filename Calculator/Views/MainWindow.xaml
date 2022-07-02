@@ -9,6 +9,7 @@
         Height="322"
         Width="225"
         Background="AliceBlue"
+        KeyDown="Window_KeyDown"
         ResizeMode="NoResize">
     <StackPanel>
         <Menu Background="White">

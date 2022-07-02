@@ -70,6 +70,10 @@ namespace Calculator.Controllers {
                     s.Input ??= "0";
                     if (!s.Input.Contains(",")) s.Input += content;
                     break;
+                case Utils.OperationType.Undefined:
+                    break;
+                default:
+                    throw new Exception("Invalid operation!");
             }
         }
         
